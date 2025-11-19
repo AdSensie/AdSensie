@@ -1,12 +1,12 @@
+# AdSensie - Telegram Analytics for Ad Placement
+
+<div align="center">
 <img width="100" height="100" alt="AdSensie" src="https://github.com/user-attachments/assets/43b1b5d1-a62c-4334-90a5-44fd89f4f718" />
-
-
-AdSensie - Telegram Analytics for Ad Placement
+</div>
 
 A Rails-based analytics platform to help advertisers identify the best Telegram channels for ad placement through data-driven metrics.
 
 ## 🎯 Features
-
 - **Channel Discovery**: Browse and search channels
 - **Advanced Filtering**: Filter by engagement rate, subscriber count, growth rate
 - **Smart Sorting**: Sort by engagement, subscribers, growth, or activity
@@ -18,9 +18,7 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
 - **Automatic Data Sync**: Scheduled syncing between PostgreSQL and ClickHouse
 
 ## 🚀 Quick Start
-
 ### Prerequisites
-
 - Ruby 3.4.1+
 - PostgreSQL
 - Redis (for Sidekiq background jobs)
@@ -29,7 +27,6 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
 - Telegram API credentials
 
 ### Installation
-
 1. **Clone and setup**
    ```bash
    git clone <your-repo-url>
@@ -38,26 +35,25 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
    ```
 
 2. **Configure environment variables**
-   
+  
    Create a `.env` file (DO NOT commit this file):
    ```env
    # Telegram API Credentials
    # Get these from https://my.telegram.org/apps
    TELEGRAM_API_ID=your_api_id_here
    TELEGRAM_API_HASH=your_api_hash_here
-   
+  
    # Database Configuration
    DATABASE_USERNAME=postgres
    DATABASE_PASSWORD=your_secure_password
-   
+  
    # Redis URL (optional, defaults to localhost)
    REDIS_URL=redis://localhost:6379/1
    ```
-   
-3. **Start Services via Docker**
-   
-   If you don't have these services installed locally, run them with Docker:
 
+3. **Start Services via Docker**
+  
+   If you don't have these services installed locally, run them with Docker:
    **PostgreSQL** (Main Database):
    ```bash
    docker run -d \
@@ -67,7 +63,6 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
      -p 5432:5432 \
      postgres:16
    ```
-
    **Redis** (Caching & Background Jobs):
    ```bash
    docker run -d \
@@ -75,7 +70,6 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
      -p 6379:6379 \
      redis:7-alpine
    ```
-
    **ClickHouse** (Analytics):
    ```bash
    docker run -d \
@@ -101,13 +95,11 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
    bin/rails clickhouse:sync
    ```
 
-
-
 7. **Start the application**
    ```bash
    bin/dev
    ```
-   
+  
    This starts:
    - Rails server (port 3000)
    - Sidekiq (background jobs)
@@ -118,9 +110,7 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
    - Login with: `email` / `password`
 
 ## 📡 Fetching Real Telegram Data
-
 ### Setup Telegram API
-
 1. **Get API credentials**:
    - Visit https://my.telegram.org/apps
    - Create a new application
@@ -141,7 +131,7 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
    ```bash
    python3 lib/telegram/fetch_channels.py
    ```
-   
+  
    You'll be prompted to enter your phone number and verification code.
 
 4. **Import data into Rails**:
@@ -155,7 +145,6 @@ A Rails-based analytics platform to help advertisers identify the best Telegram 
    ```
 
 ## 📊 Database Architecture
-
 ### PostgreSQL (Source of Truth)
 - **Users**: Authentication with Devise
 - **Channels**: Telegram channel information and metrics
@@ -174,7 +163,6 @@ Telegram API → PostgreSQL → ClickHouse (every 10 min) → Dashboard
 ```
 
 ## 🎨 Key Pages
-
 - `/` - Dashboard with overview and trending channels
 - `/channels` - Browse all channels with search and filters
 - `/channels/:id` - Channel detail page
@@ -183,7 +171,6 @@ Telegram API → PostgreSQL → ClickHouse (every 10 min) → Dashboard
 - `/performance` - PostgreSQL vs ClickHouse performance comparison
 
 ## 🔧 Development
-
 ### Run tests
 ```bash
 # Tests not yet implemented
@@ -203,7 +190,6 @@ bin/rails routes
 ```bash
 # Via Docker
 docker exec clickhouse-server clickhouse-client --database=adsensie_analytics
-
 # Example query
 docker exec clickhouse-server clickhouse-client --query="
   SELECT toDate(posted_at) as date, COUNT(*) as posts
@@ -215,50 +201,45 @@ docker exec clickhouse-server clickhouse-client --query="
 ```
 
 ## 📝 Available Rake Tasks
-
 ```bash
 # Telegram data
-bin/rails telegram:import              # Import from JSON
-bin/rails telegram:fetch_and_import    # Fetch and import
-
+bin/rails telegram:import # Import from JSON
+bin/rails telegram:fetch_and_import # Fetch and import
 # ClickHouse
-bin/rails clickhouse:sync              # Sync all data to ClickHouse
-bin/rails clickhouse:stats             # Show ClickHouse statistics
-
+bin/rails clickhouse:sync # Sync all data to ClickHouse
+bin/rails clickhouse:stats # Show ClickHouse statistics
 # Database
-bin/rails db:reset                     # Reset and reload seed data
+bin/rails db:reset # Reset and reload seed data
 ```
 
 ## 🗂️ Project Structure
-
 ```
 ad_sensie/
 ├── app/
-│   ├── controllers/      # Dashboard, Channels, Collections, Performance
-│   ├── models/           # User, Channel, Post, Collection
-│   │   └── clickhouse/   # ClickHouse models
-│   ├── services/         # AnalyticsService, ClickhouseSyncService
-│   ├── jobs/             # TelegramSyncJob, ClickhouseSyncJob
-│   ├── views/            # ERB templates with Tailwind CSS
-│   └── helpers/          # View helpers
+│ ├── controllers/ # Dashboard, Channels, Collections, Performance
+│ ├── models/ # User, Channel, Post, Collection
+│ │ └── clickhouse/ # ClickHouse models
+│ ├── services/ # AnalyticsService, ClickhouseSyncService
+│ ├── jobs/ # TelegramSyncJob, ClickhouseSyncJob
+│ ├── views/ # ERB templates with Tailwind CSS
+│ └── helpers/ # View helpers
 ├── lib/
-│   ├── telegram/         # Python scripts for Telegram API
-│   └── tasks/            # Rake tasks (telegram, clickhouse)
+│ ├── telegram/ # Python scripts for Telegram API
+│ └── tasks/ # Rake tasks (telegram, clickhouse)
 ├── db/
-│   ├── migrate/          # PostgreSQL migrations
-│   ├── clickhouse/       # ClickHouse schema
-│   └── seeds.rb          # Mock data generator
+│ ├── migrate/ # PostgreSQL migrations
+│ ├── clickhouse/ # ClickHouse schema
+│ └── seeds.rb # Mock data generator
 └── config/
-    ├── routes.rb         # Application routes
-    ├── database.yml      # PostgreSQL configuration
-    ├── clickhouse.yml    # ClickHouse configuration
-    └── schedule.rb       # Cron jobs (whenever gem)
+    ├── routes.rb # Application routes
+    ├── database.yml # PostgreSQL configuration
+    ├── clickhouse.yml # ClickHouse configuration
+    └── schedule.rb # Cron jobs (whenever gem)
 ```
 
 ## 📚 Tech Stack
-
 - **Backend**: Ruby on Rails 8.0
-- **Databases**: 
+- **Databases**:
   - PostgreSQL (transactional data)
   - ClickHouse (analytics)
   - Redis (caching, Sidekiq)
@@ -270,7 +251,6 @@ ad_sensie/
 - **Telegram API**: Telethon (Python)
 
 ## ⚡ Performance
-
 ### ClickHouse Benefits
 - **10-100x faster** for analytical queries
 - **10x better compression** than PostgreSQL
@@ -282,7 +262,6 @@ ad_sensie/
 - **ClickHouse**: Analytics, dashboards, reports, time-series data
 
 ## 🎯 Roadmap
-
 ### Completed ✅
 - [x] Channel discovery and filtering
 - [x] Collections management
