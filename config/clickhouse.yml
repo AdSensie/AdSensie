@@ -1,0 +1,23 @@
+development:
+  adapter: clickhouse
+  host: localhost
+  port: 8123
+  database: adsensie_analytics
+  username: default
+  password: 
+  
+test:
+  adapter: clickhouse
+  host: localhost
+  port: 8123
+  database: adsensie_analytics_test
+  username: default
+  password: 
+  
+production:
+  adapter: clickhouse
+  host: <%= ENV['CLICKHOUSE_HOST'] || 'localhost' %>
+  port: 8123
+  database: adsensie_analytics
+  username: <%= ENV['CLICKHOUSE_USER'] || 'default' %>
+  password: <%= ENV['CLICKHOUSE_PASSWORD'] || '' %>
