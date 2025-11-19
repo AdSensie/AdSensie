@@ -4,7 +4,7 @@
 
 
 
-A Rails-based analytics platform to help advertisers identify the best Telegram channels for ad placement through data-driven metrics.
+A Rails/Postgres/ClickHouse/Redis/Sidekiq analytics platform to help advertisers identify the best Telegram channels for ad placement through data-driven metrics.
 
 ## 🎯 Features
 - **Channel Discovery**: Browse and search channels
