@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <!-- Collection Header -->
+  <div class="bg-white rounded-lg shadow p-8">
+    <div class="flex items-start justify-between mb-6">
+      <div class="flex-1">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @collection.name %></h1>
+        <p class="text-lg text-gray-600"><%= @collection.description %></p>
+      </div>
+      <div class="flex gap-2">
+        <%= link_to "Edit Collection", edit_collection_path(@collection), class: "bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition font-medium" %>
+        <%= button_to "Delete", collection_path(@collection), method: :delete, data: { confirm: "Are you sure?" }, class: "bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition font-medium" %>
+      </div>
+    </div>
+
+    <!-- Collection Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-200">
+      <div class="bg-indigo-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Total Channels</p>
+        <p class="text-2xl font-bold text-indigo-600"><%= @collection.total_channels %></p>
+      </div>
+      <div class="bg-green-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Total Reach (Subscribers)</p>
+        <p class="text-2xl font-bold text-green-600"><%= number_to_human(@collection.total_reach) %></p>
+      </div>
+      <div class="bg-purple-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Avg Engagement Rate</p>
+        <p class="text-2xl font-bold text-purple-600"><%= @collection.average_engagement %>%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Channels List -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <h2 class="text-xl font-bold text-gray-900">Channels in this Collection</h2>
+      <%= link_to "Add More Channels", channels_path, class: "text-sm text-indigo-600 hover:text-indigo-800 font-medium" %>
+    </div>
+
+    <% if @channels.any? %>
+      <div class="divide-y divide-gray-200">
+        <% @collection.collection_channels.includes(:channel).order(:position).each do |collection_channel| %>
+          <% channel = collection_channel.channel %>
+          <div class="p-6 hover:bg-gray-50 transition flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-1">
+                <%= link_to channel.title, channel_path(channel), class: "text-lg font-semibold text-gray-900 hover:text-indigo-600" %>
+                <span class="text-sm text-gray-500"><%= channel.username %></span>
+              </div>
+              
+              <% if collection_channel.notes.present? %>
+                <p class="text-sm text-gray-600 italic mb-2">"<%= collection_channel.notes %>"</p>
+              <% end %>
+
+              <div class="flex gap-4 text-sm text-gray-500">
+                <span><%= number_to_human(channel.subscriber_count) %> subs</span>
+                <span>•</span>
+                <span class="text-indigo-600 font-medium"><%= channel.avg_engagement_rate %>% engagement</span>
+                <span>•</span>
+                <span><%= number_to_human(channel.avg_views) %> avg views</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <%= button_to remove_channel_collection_path(@collection, channel_id: channel.id), method: :delete, data: { confirm: "Remove this channel?" }, class: "text-gray-400 hover:text-red-600 transition" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="p-12 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No channels yet</h3>
+        <p class="mt-1 text-sm text-gray-500">Start adding channels to build your collection.</p>
+        <div class="mt-6">
+          <%= link_to "Browse Channels", channels_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Back Link -->
+  <div>
+    <%= link_to "← Back to Collections", collections_path, class: "text-indigo-600 hover:text-indigo-800 font-medium" %>
+  </div>
+</div>

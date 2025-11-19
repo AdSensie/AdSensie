@@ -1,0 +1,64 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">My Collections</h1>
+      <p class="mt-2 text-gray-600">Organize channels for your ad campaigns</p>
+    </div>
+    <%= link_to "New Collection", new_collection_path, class: "bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-medium" %>
+  </div>
+
+  <% if @collections.any? %>
+    <!-- Collections Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @collections.each do |collection| %>
+        <div class="bg-white rounded-lg shadow hover:shadow-lg transition">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <%= link_to collection_path(collection), class: "flex-1" do %>
+                <h3 class="text-xl font-semibold text-gray-900 hover:text-indigo-600"><%= collection.name %></h3>
+              <% end %>
+              <%= link_to "Edit", edit_collection_path(collection), class: "text-sm text-gray-500 hover:text-gray-700" %>
+            </div>
+            
+            <p class="text-sm text-gray-600 mb-4"><%= collection.description %></p>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mb-4 pt-4 border-t border-gray-200">
+              <div>
+                <p class="text-xs text-gray-500">Channels</p>
+                <p class="text-lg font-semibold text-gray-900"><%= collection.total_channels %></p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Avg Engagement</p>
+                <p class="text-lg font-semibold text-indigo-600"><%= collection.average_engagement %>%</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Total Reach</p>
+                <p class="text-sm font-medium text-gray-700"><%= number_to_human(collection.total_reach) %></p>
+              </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-2">
+              <%= link_to "View Details", collection_path(collection), class: "flex-1 text-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition text-sm font-medium" %>
+              <%= button_to "Delete", collection_path(collection), method: :delete, data: { confirm: "Are you sure?" }, class: "bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition text-sm font-medium" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <!-- Empty State -->
+    <div class="text-center py-12 bg-white rounded-lg shadow">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No collections</h3>
+      <p class="mt-1 text-sm text-gray-500">Get started by creating a new collection.</p>
+      <div class="mt-6">
+        <%= link_to "New Collection", new_collection_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+      </div>
+    </div>
+  <% end %>
+</div>
