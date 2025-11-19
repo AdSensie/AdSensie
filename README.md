@@ -1,4 +1,4 @@
-<img width="704" height="770" alt="AdSensie" src="https://github.com/user-attachments/assets/589ef40e-519b-426f-84ea-b477bca71323" /># AdSensie - Telegram Analytics for Ad Placement
+AdSensie - Telegram Analytics for Ad Placement
 
 
 <img width="704" height="770" alt="AdSensie" src="https://github.com/user-attachments/assets/43b1b5d1-a62c-4334-90a5-44fd89f4f718" />
