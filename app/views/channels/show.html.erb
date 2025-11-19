@@ -1,0 +1,135 @@
+<div class="space-y-6">
+  <!-- Channel Header -->
+  <div class="bg-white rounded-lg shadow p-8">
+    <div class="flex items-start justify-between mb-6">
+      <div class="flex-1">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @channel.title %></h1>
+        <p class="text-lg text-gray-600"><%= @channel.username %></p>
+        <% if @channel.growth_trend == "trending" %>
+          <span class="inline-block mt-2 text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full">🔥 Trending</span>
+        <% end %>
+      </div>
+      
+      <!-- Add to Collection Dropdown -->
+      <div class="relative">
+        <%= form_with url: add_channel_collection_path(@collections.first, @channel), method: :post, class: "inline" do |f| %>
+          <select name="collection_id" onchange="this.form.action = '/collections/' + this.value + '/add_channel/<%= @channel.id %>'; this.form.submit();" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-medium">
+            <option value="">Add to Collection</option>
+            <% @collections.each do |collection| %>
+              <option value="<%= collection.id %>"><%= collection.name %></option>
+            <% end %>
+          </select>
+        <% end %>
+      </div>
+    </div>
+    
+    <p class="text-gray-700 mb-6"><%= @channel.description %></p>
+    
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Subscribers</p>
+        <p class="text-2xl font-bold text-gray-900"><%= number_to_human(@channel.subscriber_count) %></p>
+      </div>
+      
+      <div class="bg-indigo-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Engagement Rate</p>
+        <p class="text-2xl font-bold text-indigo-600"><%= @channel.avg_engagement_rate %>%</p>
+      </div>
+      
+      <div class="bg-green-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Growth Rate</p>
+        <p class="text-2xl font-bold text-green-600">+<%= @channel.growth_rate %>%</p>
+      </div>
+      
+      <div class="bg-purple-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500 mb-1">Avg Views</p>
+        <p class="text-2xl font-bold text-purple-600"><%= number_to_human(@channel.avg_views) %></p>
+      </div>
+    </div>
+    
+    <!-- Additional Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+      <div class="flex items-center gap-2">
+        <span class="text-gray-500">Posts/Day:</span>
+        <span class="font-semibold"><%= @channel.post_frequency.round(2) %></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-gray-500">Total Posts:</span>
+        <span class="font-semibold"><%= @channel.posts.count %></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-gray-500">Last Updated:</span>
+        <span class="font-semibold"><%= @channel.last_synced_at ? time_ago_in_words(@channel.last_synced_at) + " ago" : "Never" %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Engagement Chart -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Engagement Over Time</h2>
+    <%= line_chart @channel.posts.group_by_day(:posted_at).average(:views), 
+        library: { 
+          scales: { 
+            y: { beginAtZero: true } 
+          } 
+        },
+        height: "300px" %>
+  </div>
+
+  <!-- Recent Posts -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-xl font-bold text-gray-900">Recent Posts</h2>
+      <p class="text-sm text-gray-500">Last <%= @recent_posts.count %> posts from this channel</p>
+    </div>
+    
+    <div class="divide-y divide-gray-200">
+      <% if @recent_posts.any? %>
+        <% @recent_posts.each do |post| %>
+          <div class="p-6 hover:bg-gray-50 transition">
+            <div class="flex items-start justify-between mb-3">
+              <p class="text-sm text-gray-500"><%= post.posted_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+            </div>
+            
+            <p class="text-gray-800 mb-4"><%= truncate(post.text, length: 300) %></p>
+            
+            <div class="flex gap-6 text-sm">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <span class="text-gray-600"><%= number_to_human(post.views) %> views</span>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                <span class="text-gray-600"><%= post.replies %> replies</span>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                </svg>
+                <span class="text-gray-600"><%= post.forwards %> forwards</span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="p-12 text-center">
+          <p class="text-gray-500">No posts available yet</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex gap-4">
+    <%= link_to "← Back to Channels", channels_path, class: "bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium" %>
+    <%= link_to "Compare with Others", channels_path, class: "bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-medium" %>
+  </div>
+</div>

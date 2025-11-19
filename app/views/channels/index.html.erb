@@ -1,0 +1,184 @@
+<div class="space-y-6">
+  <!-- Header with Search -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Channels</h1>
+      <p class="mt-2 text-gray-600">Browse and filter Ethiopian tech channels</p>
+    </div>
+    <%= link_to "Compare Selected", "#", class: "bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition opacity-50 cursor-not-allowed", id: "compare-btn" %>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <%= form_with url: channels_path, method: :get, class: "space-y-4" do |f| %>
+      <!-- Search Bar -->
+      <div>
+        <%= f.text_field :query, value: params[:query], placeholder: "Search channels by name, username, or description...", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <%= f.label :min_subscribers, "Min Subscribers", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.number_field :min_subscribers, value: params[:min_subscribers], placeholder: "e.g. 10000", class: "w-full px-3 py-2 border border-gray-300 rounded-lg" %>
+        </div>
+        
+        <div>
+          <%= f.label :max_subscribers, "Max Subscribers", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.number_field :max_subscribers, value: params[:max_subscribers], placeholder: "e.g. 50000", class: "w-full px-3 py-2 border border-gray-300 rounded-lg" %>
+        </div>
+        
+        <div>
+          <%= f.label :min_engagement, "Min Engagement %", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.number_field :min_engagement, value: params[:min_engagement], step: 0.1, placeholder: "e.g. 5.0", class: "w-full px-3 py-2 border border-gray-300 rounded-lg" %>
+        </div>
+        
+        <div>
+          <%= f.label :sort, "Sort By", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.select :sort, [["Engagement Rate", "engagement"], ["Subscribers", "subscribers"], ["Growth Rate", "growth"], ["Activity", "activity"]], { selected: params[:sort] || "engagement" }, class: "w-full px-3 py-2 border border-gray-300 rounded-lg" %>
+        </div>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="flex gap-2">
+        <%= f.submit "Apply Filters", class: "bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition" %>
+        <%= link_to "Clear Filters", channels_path, class: "bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition" %>
+        
+        <div class="ml-auto flex gap-2">
+          <%= link_to channels_path(growth_filter: "trending"), class: "px-4 py-2 rounded-lg #{params[:growth_filter] == 'trending' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'}" do %>
+            🔥 Trending
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Results Count -->
+  <div class="text-sm text-gray-600">
+    Showing <%= @channels.count %> channels
+  </div>
+
+  <!-- Channels Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @channels.each do |channel| %>
+      <div class="bg-white rounded-lg shadow hover:shadow-lg transition">
+        <div class="p-6">
+          <!-- Channel Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <%= link_to channel_path(channel), class: "text-lg font-semibold text-gray-900 hover:text-indigo-600" do %>
+                <%= channel.title %>
+              <% end %>
+              <p class="text-sm text-gray-500"><%= channel.username %></p>
+            </div>
+            <% if channel.growth_trend == "trending" %>
+              <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">🔥 Trending</span>
+            <% end %>
+          </div>
+
+          <!-- Description -->
+          <p class="text-sm text-gray-600 mb-4 line-clamp-2"><%= channel.description %></p>
+
+          <!-- Metrics -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="text-xs text-gray-500">Subscribers</p>
+              <p class="text-lg font-semibold text-gray-900"><%= number_to_human(channel.subscriber_count) %></p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Engagement</p>
+              <p class="text-lg font-semibold text-indigo-600"><%= channel.avg_engagement_rate %>%</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Avg Views</p>
+              <p class="text-sm font-medium text-gray-700"><%= number_to_human(channel.avg_views) %></p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Growth</p>
+              <p class="text-sm font-medium text-green-600">+<%= channel.growth_rate %>%</p>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <%= link_to "View Details", channel_path(channel), class: "flex-1 text-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition text-sm font-medium" %>
+            <button class="channel-compare-toggle bg-gray-50 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition text-sm" 
+                    data-channel-id="<%= channel.id %>">
+              Compare
+            </button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-center mt-8">
+    <%= paginate @channels %>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // Function to update the main compare button state
+    function updateCompareButton() {
+      const compareBtn = document.getElementById('compare-btn');
+      if (!compareBtn) return;
+
+      const selectedButtons = document.querySelectorAll('.channel-compare-toggle.bg-indigo-100');
+      const selectedIds = Array.from(selectedButtons).map(btn => btn.dataset.channelId);
+      const count = selectedIds.length;
+
+      if (count > 1) {
+        const params = selectedIds.map(id => `channel_ids[]=${id}`).join('&');
+        compareBtn.href = `/channels/compare?${params}`;
+        compareBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        compareBtn.textContent = `Compare ${count} Channels`;
+      } else {
+        compareBtn.href = '#';
+        compareBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        compareBtn.textContent = 'Select channels to compare';
+      }
+    }
+
+    // Event delegation for click handling
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('channel-compare-toggle')) {
+        e.preventDefault();
+        const btn = e.target;
+        
+        const isSelected = btn.classList.contains('bg-indigo-100');
+        const currentSelectionCount = document.querySelectorAll('.channel-compare-toggle.bg-indigo-100').length;
+
+        if (isSelected) {
+          // Deselect
+          btn.classList.remove('bg-indigo-100', 'text-indigo-700');
+          btn.classList.add('bg-gray-50', 'text-gray-600');
+          btn.textContent = 'Compare';
+        } else {
+          // Select
+          if (currentSelectionCount < 5) {
+            btn.classList.remove('bg-gray-50', 'text-gray-600');
+            btn.classList.add('bg-indigo-100', 'text-indigo-700');
+            btn.textContent = 'Selected';
+          } else {
+            alert('You can compare up to 5 channels at a time');
+          }
+        }
+        
+        updateCompareButton();
+      }
+    });
+
+    // Initialize on load and Turbo navigation
+    document.addEventListener('turbo:load', updateCompareButton);
+    document.addEventListener('DOMContentLoaded', updateCompareButton);
+  })();
+</script>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-center mt-8">
+    <%= paginate @channels %>
+  </div>
+</div>

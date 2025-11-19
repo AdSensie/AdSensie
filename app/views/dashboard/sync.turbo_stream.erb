@@ -1,0 +1,2 @@
+<%= turbo_stream.replace "sync_button_container", partial: "dashboard/sync_button", locals: { state: :syncing } %>
+<%= turbo_stream.append "toast_container", partial: "shared/toast", locals: { message: "Telegram sync started in the background.", type: "notice" } %>

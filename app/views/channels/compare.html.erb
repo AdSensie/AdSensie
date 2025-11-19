@@ -1,0 +1,186 @@
+<div class="space-y-6">
+  <% if @channels.any? %>
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Channel Comparison</h1>
+        <p class="mt-2 text-gray-600">Comparing <%= @channels.count %> channels side-by-side</p>
+      </div>
+      <%= link_to "← Back to Channels", channels_path, class: "bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium" %>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
+                Metric
+              </th>
+              <% @channels.each do |channel| %>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <%= channel.title %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <!-- Username -->
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white">
+                Username
+              </td>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= channel.username %>
+                </td>
+              <% end %>
+            </tr>
+
+            <!-- Subscribers -->
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-gray-50">
+                Subscribers
+              </td>
+              <% max_subscribers = @channels.maximum(:subscriber_count) %>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm <%= channel.subscriber_count == max_subscribers ? 'text-green-600 font-bold' : 'text-gray-900' %>">
+                  <%= number_to_human(channel.subscriber_count) %>
+                  <% if channel.subscriber_count == max_subscribers %>
+                    <span class="ml-1">👑</span>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+
+            <!-- Engagement Rate -->
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white">
+                Engagement Rate
+              </td>
+              <% max_engagement = @channels.maximum(:avg_engagement_rate) %>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm <%= channel.avg_engagement_rate == max_engagement ? 'text-indigo-600 font-bold' : 'text-gray-900' %>">
+                  <%= channel.avg_engagement_rate %>%
+                  <% if channel.avg_engagement_rate == max_engagement %>
+                    <span class="ml-1">⭐</span>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+
+            <!-- Average Views -->
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-gray-50">
+                Avg Views
+              </td>
+              <% max_views = @channels.maximum(:avg_views) %>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm <%= channel.avg_views == max_views ? 'text-purple-600 font-bold' : 'text-gray-900' %>">
+                  <%= number_to_human(channel.avg_views) %>
+                  <% if channel.avg_views == max_views %>
+                    <span class="ml-1">🔥</span>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+
+            <!-- Growth Rate -->
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white">
+                Growth Rate
+              </td>
+              <% max_growth = @channels.maximum(:growth_rate) %>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm <%= channel.growth_rate == max_growth ? 'text-green-600 font-bold' : 'text-gray-900' %>">
+                  +<%= channel.growth_rate %>%
+                  <% if channel.growth_rate == max_growth %>
+                    <span class="ml-1">📈</span>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+
+            <!-- Post Frequency -->
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-gray-50">
+                Posts/Day
+              </td>
+              <% max_frequency = @channels.maximum(:post_frequency) %>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm <%= channel.post_frequency == max_frequency ? 'text-blue-600 font-bold' : 'text-gray-900' %>">
+                  <%= (channel.post_frequency || 0).round(2) %>
+                  <% if channel.post_frequency == max_frequency && max_frequency.to_f > 0 %>
+                    <span class="ml-1">⚡</span>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+
+            <!-- Total Posts -->
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white">
+                Total Posts
+              </td>
+              <% @channels.each do |channel| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= channel.posts.count %>
+                </td>
+              <% end %>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Visual Comparison Charts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Subscribers Comparison -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Subscribers</h3>
+        <%= column_chart @channels.map { |c| [c.title, c.subscriber_count] }, 
+            library: { scales: { y: { beginAtZero: true } } } %>
+      </div>
+
+      <!-- Engagement Rate Comparison -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Engagement Rate (%)</h3>
+        <%= column_chart @channels.map { |c| [c.title, c.avg_engagement_rate] }, 
+            library: { scales: { y: { beginAtZero: true } } } %>
+      </div>
+
+      <!-- Growth Rate Comparison -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Growth Rate (%)</h3>
+        <%= column_chart @channels.map { |c| [c.title, c.growth_rate] }, 
+            library: { scales: { y: { beginAtZero: true } } } %>
+      </div>
+
+      <!-- Average Views Comparison -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Average Views</h3>
+        <%= column_chart @channels.map { |c| [c.title, c.avg_views] }, 
+            library: { scales: { y: { beginAtZero: true } } } %>
+      </div>
+    </div>
+
+    <!-- Export Button -->
+    <div class="flex justify-end">
+      <%= link_to "Export as CSV", compare_channels_path(channel_ids: @channels.map(&:id), format: :csv), class: "bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium" %>
+    </div>
+
+  <% else %>
+    <!-- Empty State -->
+    <div class="bg-white rounded-lg shadow p-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No channels selected</h3>
+      <p class="mt-1 text-sm text-gray-500">Select channels from the channels page to compare them.</p>
+      <div class="mt-6">
+        <%= link_to "Browse Channels", channels_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+      </div>
+    </div>
+  <% end %>
+</div>

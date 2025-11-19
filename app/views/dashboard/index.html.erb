@@ -1,0 +1,149 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <p class="mt-2 text-gray-600">Overview of Ethiopian tech channels for ad placement</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+          </svg>
+        </div>
+        <div class="ml-5">
+          <p class="text-sm font-medium text-gray-500">Total Channels</p>
+          <p class="text-2xl font-semibold text-gray-900"><%= @total_channels %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <div class="ml-5">
+          <p class="text-sm font-medium text-gray-500">Avg Engagement</p>
+          <p class="text-2xl font-semibold text-gray-900"><%= @avg_engagement %>%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <div class="ml-5">
+          <p class="text-sm font-medium text-gray-500">My Collections</p>
+          <p class="text-2xl font-semibold text-gray-900"><%= current_user.collections.count %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two Column Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Trending Channels -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">🔥 Trending Channels</h2>
+        <p class="text-sm text-gray-500">Fastest growing channels</p>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <% @trending_channels.each do |channel| %>
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <%= link_to channel_path(channel), class: "text-sm font-medium text-gray-900 hover:text-indigo-600" do %>
+                  <%= channel.title %>
+                <% end %>
+                <p class="text-xs text-gray-500"><%= channel.username %></p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-semibold text-green-600">+<%= channel.growth_rate %>%</p>
+                <p class="text-xs text-gray-500"><%= number_to_human(channel.subscriber_count) %> subs</p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <%= link_to "View All Channels →", channels_path(growth_filter: "trending"), class: "mt-4 block text-sm text-indigo-600 hover:text-indigo-800" %>
+      </div>
+    </div>
+
+    <!-- High Engagement Channels -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">⚡ High Engagement</h2>
+        <p class="text-sm text-gray-500">Best engagement rates</p>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <% @high_engagement_channels.each do |channel| %>
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <%= link_to channel_path(channel), class: "text-sm font-medium text-gray-900 hover:text-indigo-600" do %>
+                  <%= channel.title %>
+                <% end %>
+                <p class="text-xs text-gray-500"><%= channel.username %></p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-semibold text-indigo-600"><%= channel.avg_engagement_rate %>%</p>
+                <p class="text-xs text-gray-500"><%= number_to_human(channel.avg_views) %> avg views</p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <%= link_to "View All Channels →", channels_path(sort: "engagement"), class: "mt-4 block text-sm text-indigo-600 hover:text-indigo-800" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Collections -->
+  <% if @recent_collections.any? %>
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">📁 Recent Collections</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <% @recent_collections.each do |collection| %>
+            <div class="border border-gray-200 rounded-lg p-4 hover:border-indigo-500 transition">
+              <%= link_to collection_path(collection) do %>
+                <h3 class="font-medium text-gray-900"><%= collection.name %></h3>
+                <p class="text-sm text-gray-500 mt-1"><%= collection.total_channels %> channels</p>
+                <p class="text-xs text-gray-400 mt-2">Avg engagement: <%= collection.average_engagement %>%</p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <%= link_to "View All Collections →", collections_path, class: "mt-4 block text-sm text-indigo-600 hover:text-indigo-800" %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Quick Actions -->
+  <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+    <h2 class="text-xl font-bold mb-2">Ready to find the perfect channels for your ads?</h2>
+    <p class="mb-4">Browse channels, compare metrics, and create collections for your campaigns.</p>
+    <div class="flex gap-4">
+      <%= link_to "Browse Channels", channels_path, class: "bg-white text-indigo-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition" %>
+      <div class="flex gap-2">
+        <%= turbo_stream_from "dashboard_sync" %>
+        <%= render "dashboard/sync_button" %>
+        <%= link_to "New Collection", new_collection_path, class: "bg-white text-indigo-600 border border-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast_container"></div>
