@@ -1,4 +1,10 @@
-# AdSensie - Telegram Analytics for Ad Placement
+<img width="704" height="770" alt="AdSensie" src="https://github.com/user-attachments/assets/589ef40e-519b-426f-84ea-b477bca71323" /># AdSensie - Telegram Analytics for Ad Placement
+
+
+<img width="704" height="770" alt="AdSensie" src="https://github.com/user-attachments/assets/43b1b5d1-a62c-4334-90a5-44fd89f4f718" />
+
+
+
 
 A Rails-based analytics platform to help advertisers identify the best Telegram channels for ad placement through data-driven metrics.
 
@@ -299,26 +305,3 @@ ad_sensie/
 - [ ] Advanced analytics (cohort, retention)
 - [ ] API endpoints
 - [ ] Mobile responsive improvements
-
-## 🚀 Deployment
-
-### Prerequisites
-- Ubuntu/Debian server
-- PostgreSQL 14+
-- Redis 6+
-- Docker (for ClickHouse)
-- Nginx or Apache
-
-### Steps
-1. Set up environment variables
-2. Configure database connections
-3. Run migrations
-4. Start ClickHouse container
-5. Initialize ClickHouse schema
-6. Set up cron jobs (`whenever --update-crontab`)
-7. Start Sidekiq
-8. Deploy Rails app (Capistrano, Kamal, or manual)
-
-## 📄 License
-
-This project is for educational purposes.
